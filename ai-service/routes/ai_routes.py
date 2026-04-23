@@ -4,58 +4,14 @@ from utils.sanitizer import sanitize_input, is_prompt_injection
 from datetime import datetime, timezone
 import json
 import re
+import logging
 
 ai_bp = Blueprint("ai", __name__)
 
-# ------------------- DESCRIBE (Day 3) -------------------
-
 @ai_bp.route("/describe", methods=["POST"])
 def describe():
-    data = request.get_json()
+    logging.info("Describe API called")
 
-    if not data:
-        return jsonify({"error": "No input provided"}), 400
-
-    user_input = data.get("input")
-
-    if not user_input:
-        return jsonify({"error": "Input is required"}), 400
-
-    user_input = sanitize_input(user_input)
-
-    if is_prompt_injection(user_input):
-        return jsonify({"error": "Malicious input detected"}), 400
-
-    result = get_ai_response(user_input)
-
-    return jsonify({
-        "description": result.get("response", ""),
-        "generated_at": datetime.now(timezone.utc).isoformat()
-    })
-
-
-# ------------------- HELPER -------------------
-
-def extract_json_array(text):
-    try:
-        return json.loads(text)
-    except:
-        pass
-
-    match = re.search(r"\[.*\]", text, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(0))
-        except:
-            pass
-
-    return None
-
-
-# ------------------- RECOMMEND (Day 4) -------------------
-
-@ai_bp.route("/recommend", methods=["POST"])
-def recommend():
     data = request.get_json()
 
     if not data:
@@ -74,32 +30,108 @@ def recommend():
     prompt = f"""
 You are an AI assistant for vendor offboarding.
 
-Given the vendor details below, return exactly 3 recommendations as a JSON array.
+Given the vendor details below, generate a clear, professional, and concise description explaining why the vendor should be offboarded.
 
-Each recommendation must contain:
-- action_type
-- description
-- priority
-
-Priority must be one of: High, Medium, Low.
+Focus on:
+- Risks (security, compliance, performance)
+- Business impact
+- Reason for offboarding
 
 Vendor Details:
 {user_input}
 
-Return only valid JSON.
+Return only the description in a professional tone.
 """
 
     result = get_ai_response(prompt)
 
-    raw_text = result.get("response", "")
+    if "error" in result:
+        return jsonify({
+            "description": "",
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "error": result["error"]
+        }), 500
+
+    return jsonify({
+        "description": result.get("response", ""),
+        "generated_at": datetime.now(timezone.utc).isoformat()
+    })
+
+
+def extract_json_array(text):
+    try:
+        return json.loads(text)
+    except:
+        pass
+
+    match = re.search(r"\[.*\]", text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(0))
+        except:
+            pass
+
+    return None
+
+
+@ai_bp.route("/recommend", methods=["POST"])
+def recommend():
+    logging.info("Recommend API called")
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No input provided"}), 400
+
+    user_input = data.get("input")
+
+    if not user_input:
+        return jsonify({"error": "Input is required"}), 400
+
+    user_input = sanitize_input(user_input)
+
+    if is_prompt_injection(user_input):
+        return jsonify({"error": "Malicious input detected"}), 400
+
+    prompt = f"""
+You are an AI assistant for vendor offboarding.
+
+Return exactly 3 recommendations as a VALID JSON ARRAY.
+
+STRICT RULES:
+- Only JSON (no explanation)
+- No markdown
+- No extra text
+- Each item must have:
+  action_type, description, priority
+
+Priority must be: High, Medium, or Low
+
+Vendor Details:
+{user_input}
+"""
+
+    result = get_ai_response(prompt)
+
+    if "error" in result:
+        return jsonify({
+            "recommendations": [],
+            "is_fallback": True,
+            "error": result["error"]
+        }), 500
+
+    raw_text = result.get("response", "").strip()
     recommendations = extract_json_array(raw_text)
 
-    if not recommendations:
+    if not recommendations or not isinstance(recommendations, list):
         return jsonify({
             "recommendations": [],
             "generated_at": datetime.now(timezone.utc).isoformat(),
-            "is_fallback": True
+            "is_fallback": True,
+            "raw_response": raw_text
         })
+
+    recommendations = recommendations[:3]
 
     return jsonify({
         "recommendations": recommendations,
