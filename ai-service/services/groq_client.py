@@ -14,30 +14,15 @@ def get_ai_response(user_input):
         "Content-Type": "application/json"
     }
 
-    prompt_template = f"""
-You are an AI assistant for vendor offboarding.
-
-Given the vendor details below, generate a clear, professional, and concise description explaining why the vendor should be offboarded.
-
-Focus on:
-- Risks (security, compliance, performance)
-- Business impact
-- Reason for offboarding
-
-Vendor Details:
-{user_input}
-
-Return only the description in a professional tone.
-"""
-
     data = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
             {
                 "role": "user",
-                "content": prompt_template
+                "content": user_input
             }
-        ]
+        ],
+        "temperature": 0.2
     }
 
     response = requests.post(url, headers=headers, json=data)
