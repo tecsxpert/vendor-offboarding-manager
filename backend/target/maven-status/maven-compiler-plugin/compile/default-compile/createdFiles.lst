@@ -1,3 +1,2 @@
-com\internship\tool\Application.class
 com\internship\tool\entity\Vendor.class
 com\internship\tool\repository\VendorRepository.class

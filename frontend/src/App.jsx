@@ -1,8 +1,8 @@
-import HomePage from "./pages/HomePage";
+import VendorListPage from "./pages/VendorListPage";
 import "./index.css";
 
 function App() {
-  return <HomePage />;
+  return <VendorListPage />;
 }
 
 export default App;

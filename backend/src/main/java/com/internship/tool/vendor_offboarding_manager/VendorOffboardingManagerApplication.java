@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class VendorOffboardingManagerApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(VendorOffboardingManagerApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(VendorOffboardingManagerApplication.class, args);
+    }
 }
