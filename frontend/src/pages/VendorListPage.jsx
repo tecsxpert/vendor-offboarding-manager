@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 
 const VendorListPage = () => {
@@ -10,9 +10,10 @@ const VendorListPage = () => {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await api.get("/vendors");
+        const response = await api.get("http://localhost:8081/vendors");
         setVendors(response.data);
       } catch (err) {
+     
         setError("Failed to fetch vendors");
         console.error(err);
       } finally {
@@ -43,6 +44,12 @@ const VendorListPage = () => {
 
         {!loading && !error && vendors.length > 0 && (
           <div className="overflow-x-auto">
+            <button
+  onClick={() => (window.location.href = "/form")}
+  className="bg-green-600 text-white px-4 py-2 rounded mb-4"
+>
+  + Create Vendor
+</button>
             <table className="min-w-full border border-gray-300 shadow-sm">
               <thead className="bg-gray-100">
                 <tr>

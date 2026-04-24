@@ -1,8 +1,8 @@
-import VendorListPage from "./pages/VendorListPage";
+import VendorFormPage from "./pages/VendorFormPage";
 import "./index.css";
 
 function App() {
-  return <VendorListPage />;
+  return <VendorFormPage />;
 }
 
 export default App;
