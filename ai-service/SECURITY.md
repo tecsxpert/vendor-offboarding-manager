@@ -76,3 +76,30 @@ The AI service is designed with basic security measures including input validati
 - Expected: Block malicious input
 - Result: Application detected malicious input and returned error response
 - Status: PASS
+
+
+---
+
+## Week 2 Security Scan (OWASP ZAP)
+
+### Scan Summary
+- Tool Used: OWASP ZAP
+- Target: http://127.0.0.1:5000
+- Scan Type: Automated Scan
+
+### Critical Findings
+- None
+
+### Medium Findings
+- None
+
+### Low / Informational Findings
+1. Content Security Policy (CSP) Header Not Set
+2. Missing Anti-Clickjacking Header
+3. Server Leaks Version Information via "Server" Header
+4. X-Content-Type-Options Header Missing
+
+### Action Taken
+- No critical vulnerabilities found, so no immediate fixes required
+- Medium findings absent, so no remediation planning needed
+- Low findings documented for future hardening improvements
