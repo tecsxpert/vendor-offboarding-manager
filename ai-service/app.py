@@ -12,9 +12,11 @@ limiter = Limiter(
     default_limits=["30 per minute"]
 )
 
+
 @app.route("/")
 def home():
     return "AI Service Running 🚀"
+
 
 @app.route("/describe", methods=["POST"])
 @limiter.limit("30 per minute")
@@ -26,10 +28,8 @@ def describe():
     if not user_input:
         return jsonify({"error": "Input is required"}), 400
 
-    # 🔐 sanitize input
     user_input = sanitize_input(user_input)
 
-    # 🔐 prompt injection check
     if is_prompt_injection(user_input):
         return jsonify({"error": "Malicious input detected"}), 400
 
@@ -37,6 +37,48 @@ def describe():
 
     return jsonify(result)
 
-# 🔥 THIS IS REQUIRED
+
+# Added by AI Dev 2 for Day 8 testing / endpoint support
+@app.route("/recommend", methods=["POST"])
+@limiter.limit("30 per minute")
+def recommend():
+    data = request.json
+
+    user_input = data.get("input")
+
+    if not user_input:
+        return jsonify({"error": "Input is required"}), 400
+
+    user_input = sanitize_input(user_input)
+
+    if is_prompt_injection(user_input):
+        return jsonify({"error": "Malicious input detected"}), 400
+
+    result = get_ai_response(user_input)
+
+    return jsonify(result)
+
+
+# Added by AI Dev 2 for Day 8 testing / endpoint support
+@app.route("/generate-report", methods=["POST"])
+@limiter.limit("30 per minute")
+def generate_report():
+    data = request.json
+
+    user_input = data.get("input")
+
+    if not user_input:
+        return jsonify({"error": "Input is required"}), 400
+
+    user_input = sanitize_input(user_input)
+
+    if is_prompt_injection(user_input):
+        return jsonify({"error": "Malicious input detected"}), 400
+
+    result = get_ai_response(user_input)
+
+    return jsonify(result)
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
