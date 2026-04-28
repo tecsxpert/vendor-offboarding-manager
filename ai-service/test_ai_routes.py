@@ -5,20 +5,20 @@ from app import app
 
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
+    app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
 
 
 # 1. Test /describe success
-@patch("services.groq_client.get_ai_response")
+@patch("routes.ai_routes.get_ai_response")
 def test_describe_success(mock_ai, client):
-    mock_ai.return_value = "Vendor description generated"
+    mock_ai.return_value = {"response": "Vendor description generated"}
 
     response = client.post("/describe", json={"input": "Vendor issue"})
 
     assert response.status_code == 200
-    assert "response" in response.json
+    assert "description" in response.json
 
 
 # 2. Test empty input
@@ -39,10 +39,10 @@ def test_prompt_injection_blocked(client):
     assert "error" in response.json
 
 
-# 4. Test SQL injection input
-@patch("services.groq_client.get_ai_response")
+# 4. Test SQL injection safe handling
+@patch("routes.ai_routes.get_ai_response")
 def test_sql_injection_safe(mock_ai, client):
-    mock_ai.return_value = "Safe response"
+    mock_ai.return_value = {"response": "Safe response"}
 
     response = client.post(
         "/describe",
@@ -53,35 +53,37 @@ def test_sql_injection_safe(mock_ai, client):
 
 
 # 5. Test /recommend format
-@patch("services.groq_client.get_ai_response")
+@patch("routes.ai_routes.get_ai_response")
 def test_recommend_success(mock_ai, client):
-    mock_ai.return_value = "Recommendation output"
+    mock_ai.return_value = {
+        "response": '[{"action_type":"Disable Access","description":"Disable vendor access","priority":"High"}]'
+    }
 
     response = client.post("/recommend", json={"input": "Vendor issue"})
 
     assert response.status_code == 200
-    assert "response" in response.json
+    assert "recommendations" in response.json
 
 
 # 6. Test /generate-report format
-@patch("services.groq_client.get_ai_response")
+@patch("routes.ai_routes.get_ai_response")
 def test_generate_report_success(mock_ai, client):
-    mock_ai.return_value = "Generated report"
+    mock_ai.return_value = {"response": "Generated report"}
 
     response = client.post("/generate-report", json={"input": "Vendor issue"})
 
     assert response.status_code == 200
-    assert "response" in response.json
+    assert "report" in response.json
 
 
 # 7. Test Groq failure handling
-@patch("services.groq_client.get_ai_response")
+@patch("routes.ai_routes.get_ai_response")
 def test_groq_failure(mock_ai, client):
-    mock_ai.side_effect = Exception("Groq failed")
+    mock_ai.return_value = {"error": "Groq failed"}
 
     response = client.post("/describe", json={"input": "Vendor issue"})
 
-    assert response.status_code in [200, 500]
+    assert response.status_code == 500
 
 
 # 8. Test invalid JSON body

@@ -1,84 +1,30 @@
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask import Flask, request, jsonify
-from services.groq_client import get_ai_response
-from utils.sanitizer import sanitize_input, is_prompt_injection
+from flask import Flask
+from routes.ai_routes import ai_bp
+import logging
 
 app = Flask(__name__)
 
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["30 per minute"]
+# Register AI Blueprint
+app.register_blueprint(ai_bp)
+
+# Logging Config
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
-
+# Home Route
 @app.route("/")
 def home():
     return "AI Service Running 🚀"
 
-
-@app.route("/describe", methods=["POST"])
-@limiter.limit("30 per minute")
-def describe():
-    data = request.json
-
-    user_input = data.get("input")
-
-    if not user_input:
-        return jsonify({"error": "Input is required"}), 400
-
-    user_input = sanitize_input(user_input)
-
-    if is_prompt_injection(user_input):
-        return jsonify({"error": "Malicious input detected"}), 400
-
-    result = get_ai_response(user_input)
-
-    return jsonify(result)
-
-
-# Added by AI Dev 2 for Day 8 testing / endpoint support
-@app.route("/recommend", methods=["POST"])
-@limiter.limit("30 per minute")
-def recommend():
-    data = request.json
-
-    user_input = data.get("input")
-
-    if not user_input:
-        return jsonify({"error": "Input is required"}), 400
-
-    user_input = sanitize_input(user_input)
-
-    if is_prompt_injection(user_input):
-        return jsonify({"error": "Malicious input detected"}), 400
-
-    result = get_ai_response(user_input)
-
-    return jsonify(result)
-
-
-# Added by AI Dev 2 for Day 8 testing / endpoint support
-@app.route("/generate-report", methods=["POST"])
-@limiter.limit("30 per minute")
-def generate_report():
-    data = request.json
-
-    user_input = data.get("input")
-
-    if not user_input:
-        return jsonify({"error": "Input is required"}), 400
-
-    user_input = sanitize_input(user_input)
-
-    if is_prompt_injection(user_input):
-        return jsonify({"error": "Malicious input detected"}), 400
-
-    result = get_ai_response(user_input)
-
-    return jsonify(result)
-
+# Health Check Route
+@app.route("/health", methods=["GET"])
+def health():
+    return {
+        "status": "ok",
+        "service": "AI Service Running"
+    }
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(port=5000, debug=True)
