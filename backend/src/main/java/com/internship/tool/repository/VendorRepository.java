@@ -1,7 +1,10 @@
-package com.internship.tool.repository;
+package com.internship.tool.vendor_offboarding_manager.repository;
 
+import com.internship.tool.vendor_offboarding_manager.entity.Vendor;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.internship.tool.entity.Vendor;
+
+import java.util.List;
 
 public interface VendorRepository extends JpaRepository<Vendor, Long> {
+    List<Vendor> findByVendorNameContainingIgnoreCaseOrVendorEmailContainingIgnoreCase(String name, String email);
 }
