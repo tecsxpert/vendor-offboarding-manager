@@ -103,3 +103,33 @@ The AI service is designed with basic security measures including input validati
 - No critical vulnerabilities found, so no immediate fixes required
 - Medium findings absent, so no remediation planning needed
 - Low findings documented for future hardening improvements
+
+
+---
+
+## Week 2 Security Sign-Off
+
+### JWT Verification
+- JWT authentication is handled by the main backend / API gateway before requests reach the AI microservice.
+- No direct JWT validation is implemented inside the Flask AI service.
+- Status: VERIFIED
+
+### Rate Limiting Verification
+- Flask-Limiter configured at 30 requests per minute per IP.
+- Verified active on all AI endpoints.
+- Status: VERIFIED
+
+### Injection Protection Verification
+- Prompt injection detection implemented via sanitizer utility.
+- SQL injection / malicious input tested and safely handled.
+- Status: VERIFIED
+
+### PII Audit
+- Reviewed all AI prompt templates and request handling logic.
+- Confirmed no personal data / PII is included in prompts sent to AI provider.
+- Only vendor offboarding context and risk/compliance data are processed.
+- Status: VERIFIED
+
+## Final Security Approval
+Week 2 AI Security Review completed successfully.
+AI service approved for current development stage.
