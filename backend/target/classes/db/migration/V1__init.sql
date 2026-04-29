@@ -1,0 +1,39 @@
+CREATE TABLE vendors (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+<<<<<<< HEAD
+
+    vendor_name VARCHAR(255) NOT NULL,
+    vendor_email VARCHAR(255) UNIQUE NOT NULL,
+    vendor_phone VARCHAR(20),
+
+    company_name VARCHAR(255),
+    contract_start_date DATE,
+    contract_end_date DATE,
+
+    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+
+    offboarding_reason TEXT,
+    offboarding_date DATE,
+
+=======
+    vendor_name VARCHAR(255) NOT NULL,
+    vendor_email VARCHAR(255) UNIQUE NOT NULL,
+    vendor_phone VARCHAR(20),
+    company_name VARCHAR(255),
+    contract_start_date DATE,
+    contract_end_date DATE,
+    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+    offboarding_reason TEXT,
+    offboarding_date DATE,
+>>>>>>> main
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+<<<<<<< HEAD
+-- Indexes for performance
+CREATE INDEX idx_vendor_email ON vendors(vendor_email);
+=======
+>>>>>>> main
+CREATE INDEX idx_status ON vendors(status);
+CREATE INDEX idx_contract_end ON vendors(contract_end_date);
