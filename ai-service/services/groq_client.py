@@ -1,45 +1,46 @@
-import requests
 import os
+from groq import Groq
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 
-API_KEY = os.getenv("GROQ_API_KEY")
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def get_ai_response(user_input):
-    url = "https://api.groq.com/openai/v1/chat/completions"
+    retries = 3
 
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
+    # Load prompt template
+    try:
+        with open("prompts/describe_prompt.txt", "r") as file:
+            template = file.read()
+    except Exception as e:
+        print("Error loading prompt file:", e)
+        template = "{input}"
 
-    data = {
-        "model": "llama-3.3-70b-versatile",
-        "messages": [
-            {
-                "role": "user",
-                "content": user_input
+    # Insert user input into template
+    prompt = template.replace("{input}", user_input)
+
+    for attempt in range(retries):
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+
+            return {
+                "response": response.choices[0].message.content,
+                "is_fallback": False
             }
-        ],
-        "temperature": 0.2
+
+        except Exception as e:
+            print(f"Error: {e}, retrying...")
+            time.sleep(2)
+
+    # Fallback response
+    return {
+        "response": "AI service temporarily unavailable",
+        "is_fallback": True
     }
-
-    response = requests.post(url, headers=headers, json=data)
-
-    try:
-        res_json = response.json()
-    except:
-        return {"error": "Invalid response from API"}
-
-    if "error" in res_json:
-        return {"error": res_json["error"]["message"]}
-
-    try:
-        answer = res_json["choices"][0]["message"]["content"]
-        return {"response": answer}
-    except:
-        return {
-            "error": "Unexpected API response",
-            "full_response": res_json
-        }

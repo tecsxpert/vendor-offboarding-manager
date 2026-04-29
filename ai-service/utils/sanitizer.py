@@ -1,28 +1,25 @@
 import re
 
-def sanitize_input(text):
-    if not text:
-        return ""
-    return re.sub(r"<[^>]*>", "", text).strip()
+# List of suspicious keywords
+SUSPICIOUS_PATTERNS = [
+    "ignore previous instructions",
+    "system prompt",
+    "reveal secrets",
+    "bypass",
+    "jailbreak"
+]
 
-def is_prompt_injection(text):
-    if not text:
-        return False
+def sanitize_input(user_input):
+    # Remove HTML tags
+    clean_text = re.sub(r'<.*?>', '', user_input)
+    return clean_text.strip()
 
-    suspicious_patterns = [
-        r"ignore previous instructions",
-        r"forget previous instructions",
-        r"system prompt",
-        r"developer message",
-        r"bypass",
-        r"jailbreak",
-        r"act as"
-    ]
 
-    lowered = text.lower()
+def is_prompt_injection(user_input):
+    lower_input = user_input.lower()
 
-    for pattern in suspicious_patterns:
-        if re.search(pattern, lowered):
+    for pattern in SUSPICIOUS_PATTERNS:
+        if pattern in lower_input:
             return True
 
     return False
