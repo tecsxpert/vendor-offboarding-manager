@@ -4,7 +4,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import VendorListPage from "./pages/VendorListPage";
 import VendorFormPage from "./pages/VendorFormPage";
-import "./index.css";
+import DashboardPage from "./pages/DashboardPage";
+import VendorDetailPage from "./pages/VendorDetailPage";
 
 function App() {
   return (
@@ -23,6 +24,24 @@ function App() {
           />
 
           <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/vendors/:id"
+            element={
+              <ProtectedRoute>
+                <VendorDetailPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/form"
             element={
               <ProtectedRoute>
@@ -30,6 +49,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

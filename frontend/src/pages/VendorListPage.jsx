@@ -13,6 +13,7 @@ const VendorListPage = () => {
   const fetchVendors = async () => {
     try {
       setLoading(true);
+      setError(""); // ✅ reset error
 
       const response = await api.get(
         `/vendors/all?page=${page}&size=5`
@@ -36,6 +37,7 @@ const VendorListPage = () => {
   return (
     <div>
       <Navbar />
+
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-4">Vendor List</h1>
 
@@ -81,7 +83,11 @@ const VendorListPage = () => {
 
               <tbody>
                 {vendors.map((vendor) => (
-                  <tr key={vendor.id}>
+                  <tr
+  key={vendor.id}
+  onClick={() => (window.location.href = `/vendors/${vendor.id}`)}
+  className="cursor-pointer hover:bg-gray-100"
+>
                     <td className="border px-4 py-2">{vendor.id}</td>
                     <td className="border px-4 py-2">{vendor.vendorName}</td>
                     <td className="border px-4 py-2">{vendor.vendorEmail}</td>
@@ -94,21 +100,23 @@ const VendorListPage = () => {
             </table>
 
             {/* ✅ Pagination */}
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex gap-3 items-center">
               <button
                 disabled={page === 0}
                 onClick={() => setPage(page - 1)}
-                className="bg-gray-500 text-white px-3 py-1 rounded"
+                className="bg-gray-500 text-white px-3 py-1 rounded disabled:opacity-50"
               >
                 Prev
               </button>
 
-              <span>Page {page + 1}</span>
+              <span className="font-medium">
+                Page {page + 1} of {totalPages}
+              </span>
 
               <button
                 disabled={page + 1 >= totalPages}
                 onClick={() => setPage(page + 1)}
-                className="bg-gray-500 text-white px-3 py-1 rounded"
+                className="bg-gray-500 text-white px-3 py-1 rounded disabled:opacity-50"
               >
                 Next
               </button>
