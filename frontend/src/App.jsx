@@ -6,6 +6,7 @@ import VendorListPage from "./pages/VendorListPage";
 import VendorFormPage from "./pages/VendorFormPage";
 import DashboardPage from "./pages/DashboardPage";
 import VendorDetailPage from "./pages/VendorDetailPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 
 function App() {
   return (
@@ -47,8 +48,9 @@ function App() {
               <ProtectedRoute>
                 <VendorFormPage />
               </ProtectedRoute>
-            }
-          />
+            } />
+            <Route path="/analytics" element={<AnalyticsPage />} />
+          
           <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </BrowserRouter>

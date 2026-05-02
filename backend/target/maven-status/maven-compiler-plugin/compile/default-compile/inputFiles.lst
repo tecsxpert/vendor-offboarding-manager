@@ -2,4 +2,5 @@ C:\Projects\vendor-offboarding-manager\backend\src\main\java\com\internship\tool
 C:\Projects\vendor-offboarding-manager\backend\src\main\java\com\internship\tool\vendor_offboarding_manager\controller\VendorController.java
 C:\Projects\vendor-offboarding-manager\backend\src\main\java\com\internship\tool\vendor_offboarding_manager\repository\VendorRepository.java
 C:\Projects\vendor-offboarding-manager\backend\src\main\java\com\internship\tool\vendor_offboarding_manager\config\AuditAspect.java
+C:\Projects\vendor-offboarding-manager\backend\src\main\java\com\internship\tool\vendor_offboarding_manager\config\DataSeeder.java
 C:\Projects\vendor-offboarding-manager\backend\src\main\java\com\internship\tool\vendor_offboarding_manager\entity\Vendor.java
