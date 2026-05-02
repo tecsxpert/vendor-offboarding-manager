@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/vendors")
@@ -29,10 +30,23 @@ public class VendorController {
     @GetMapping("/all")
     public Page<Vendor> getAllVendorsPaginated(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return vendorRepository.findAll(pageable);
+
+        if (search != null && search.isBlank()) {
+            search = null;
+        }
+
+        if (status != null && status.isBlank()) {
+            status = null;
+        }
+
+        return vendorRepository.filterVendors(search, status, pageable);
     }
 
     @PostMapping
@@ -72,26 +86,25 @@ public class VendorController {
                 .findByVendorNameContainingIgnoreCaseOrVendorEmailContainingIgnoreCase(q, q);
     }
 
-  @GetMapping("/stats")
-public Map<String, Long> getStats() {
+    @GetMapping("/stats")
+    public Map<String, Long> getStats() {
+        long total = vendorRepository.count();
+        long active = vendorRepository.countByStatus("ACTIVE");
+        long inactive = vendorRepository.countByStatus("INACTIVE");
+        long pending = vendorRepository.countByStatus("PENDING");
 
-    long total = vendorRepository.count();
-    long active = vendorRepository.countByStatus("ACTIVE");
-    long inactive = vendorRepository.countByStatus("INACTIVE");
-    long pending = vendorRepository.countByStatus("PENDING"); // ✅ here
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("total", total);
+        stats.put("active", active);
+        stats.put("inactive", inactive);
+        stats.put("pending", pending);
 
-    Map<String, Long> stats = new HashMap<>();
-    stats.put("total", total);
-    stats.put("active", active);
-    stats.put("inactive", inactive);
-    stats.put("pending", pending); // ✅ here
+        return stats;
+    }
 
-    return stats;
-
-}
-@GetMapping("/{id}")
-public Vendor getVendorById(@PathVariable Long id) {
-    return vendorRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Vendor not found"));
-}
+    @GetMapping("/{id}")
+    public Vendor getVendorById(@PathVariable Long id) {
+        return vendorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vendor not found"));
+    }
 }
