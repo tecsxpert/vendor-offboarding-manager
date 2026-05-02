@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import AIPanel from "../components/AIPanel";
 
 const VendorDetailPage = () => {
   const { id } = useParams();
@@ -70,6 +71,8 @@ const VendorDetailPage = () => {
             Delete
           </button>
         </div>
+
+        <AIPanel vendorId={vendor.id} />
       </div>
     </div>
   );
