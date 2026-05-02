@@ -2,11 +2,14 @@ package com.internship.tool.vendor_offboarding_manager.controller;
 
 import com.internship.tool.vendor_offboarding_manager.entity.Vendor;
 import com.internship.tool.vendor_offboarding_manager.repository.VendorRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +103,64 @@ public class VendorController {
         stats.put("pending", pending);
 
         return stats;
+    }
+
+    @GetMapping("/export")
+    public void exportVendorsToCsv(HttpServletResponse response) {
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=vendors.csv");
+
+        try (PrintWriter writer = response.getWriter()) {
+            List<Vendor> vendors = vendorRepository.findAll();
+
+            writer.println("ID,Vendor Name,Email,Phone,Company,Status");
+
+            for (Vendor v : vendors) {
+                writer.println(
+                        v.getId() + "," +
+                        v.getVendorName() + "," +
+                        v.getVendorEmail() + "," +
+                        v.getVendorPhone() + "," +
+                        v.getCompanyName() + "," +
+                        v.getStatus()
+                );
+            }
+
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PostMapping("/upload")
+    public Map<String, String> uploadFile(@RequestParam("file") MultipartFile file) {
+        Map<String, String> response = new HashMap<>();
+
+        if (file.isEmpty()) {
+            response.put("message", "File is empty");
+            return response;
+        }
+
+        String type = file.getContentType();
+
+        if (!"text/csv".equals(type) &&
+                !"application/vnd.ms-excel".equals(type)) {
+            response.put("message", "Only CSV files are allowed");
+            return response;
+        }
+
+        long maxSize = 2 * 1024 * 1024;
+
+        if (file.getSize() > maxSize) {
+            response.put("message", "File size exceeds 2MB limit");
+            return response;
+        }
+
+        response.put("message", "File uploaded successfully");
+        response.put("fileName", file.getOriginalFilename());
+        response.put("size", String.valueOf(file.getSize()));
+
+        return response;
     }
 
     @GetMapping("/{id}")
