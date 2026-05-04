@@ -1,5 +1,12 @@
-venv/
-__pycache__/
-.env
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# OS
 .DS_Store
-prompt_test_cases.txt
