@@ -44,7 +44,7 @@ public class VendorService {
     // ✅ Get by ID
     public Vendor getVendorById(Long id) {
         return vendorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
     }
 
     // ✅ Update vendor
