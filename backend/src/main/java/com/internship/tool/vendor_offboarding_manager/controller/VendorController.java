@@ -2,11 +2,12 @@ package com.internship.tool.vendor_offboarding_manager.controller;
 
 import com.internship.tool.vendor_offboarding_manager.entity.Vendor;
 import com.internship.tool.vendor_offboarding_manager.service.VendorService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,54 +26,56 @@ public class VendorController {
 
     // ✅ Get all vendors
     @GetMapping
-    public ResponseEntity<List<Vendor>> getAllVendors() {
-        return ResponseEntity.ok(vendorService.getAllVendors());
+    public List<Vendor> getAllVendors() {
+        return vendorService.getAllVendors();
     }
 
     // ✅ Pagination
     @GetMapping("/all")
-    public ResponseEntity<Page<Vendor>> getAllVendorsPaginated(
+    public Page<Vendor> getAllVendorsPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(vendorService.getAllVendorsPaginated(pageable));
+        return vendorService.getAllVendorsPaginated(pageable);
     }
 
-    // ✅ Create vendor
+    // ✅ Create vendor (with validation)
     @PostMapping
-    public ResponseEntity<Vendor> createVendor(@Valid @RequestBody Vendor vendor) {
-        return ResponseEntity.ok(vendorService.createVendor(vendor));
+    public Vendor createVendor(@Valid @RequestBody Vendor vendor) {
+        return vendorService.createVendor(vendor);
     }
 
-    // ✅ Update vendor
+    // ✅ Update vendor (with validation)
     @PutMapping("/{id}")
-    public ResponseEntity<Vendor> updateVendor(@PathVariable Long id,
-                                               @Valid @RequestBody Vendor vendor) {
-        return ResponseEntity.ok(vendorService.updateVendor(id, vendor));
+    public Vendor updateVendor(
+            @PathVariable Long id,
+            @Valid @RequestBody Vendor vendor
+    ) {
+        return vendorService.updateVendor(id, vendor);
     }
 
-    // ✅ Soft delete vendor
+    // ✅ Soft delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Vendor> softDeleteVendor(@PathVariable Long id) {
-        return ResponseEntity.ok(vendorService.deleteVendor(id));
+    public Vendor deleteVendor(@PathVariable Long id) {
+        return vendorService.deleteVendor(id);
     }
 
     // ✅ Search
     @GetMapping("/search")
-    public ResponseEntity<List<Vendor>> searchVendors(@RequestParam String q) {
-        return ResponseEntity.ok(vendorService.searchVendors(q));
+    public List<Vendor> searchVendors(@RequestParam String q) {
+        return vendorService.searchVendors(q);
     }
 
     // ✅ Stats
     @GetMapping("/stats")
-    public ResponseEntity<Map<String, Long>> getStats() {
-        return ResponseEntity.ok(vendorService.getStats());
+    public Map<String, Long> getStats() {
+        return vendorService.getStats();
     }
 
     // ✅ Get by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Vendor> getVendorById(@PathVariable Long id) {
-        return ResponseEntity.ok(vendorService.getVendorById(id));
+    public Vendor getVendorById(@PathVariable Long id) {
+        return vendorService.getVendorById(id);
     }
 }
