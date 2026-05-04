@@ -1,8 +1,10 @@
 package com.internship.tool.vendor_offboarding_manager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDate;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "vendors")
@@ -12,38 +14,25 @@ public class Vendor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "vendor_name", nullable = false)
+    @NotBlank(message = "Vendor name is required")
     private String vendorName;
 
-    @Column(name = "vendor_email", nullable = false, unique = true)
+    @NotBlank(message = "Vendor email is required")
+    @Email(message = "Invalid email format")
     private String vendorEmail;
 
-    @Column(name = "vendor_phone")
+    @NotBlank(message = "Phone number is required")
     private String vendorPhone;
 
-    @Column(name = "company_name")
+    @NotBlank(message = "Company name is required")
     private String companyName;
 
-    @Column(name = "contract_start_date")
     private LocalDate contractStartDate;
-
-    @Column(name = "contract_end_date")
     private LocalDate contractEndDate;
 
-    @Column(nullable = false)
-    private String status = "ACTIVE";
+    private String status;
 
-    @Column(name = "offboarding_reason")
-    private String offboardingReason;
-
-    @Column(name = "offboarding_date")
-    private LocalDate offboardingDate;
-
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private Timestamp createdAt;
-
-    @Column(name = "updated_at", insertable = false, updatable = false)
-    private Timestamp updatedAt;
+    // 👉 Getters & Setters
 
     public Long getId() {
         return id;
@@ -103,29 +92,5 @@ public class Vendor {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getOffboardingReason() {
-        return offboardingReason;
-    }
-
-    public void setOffboardingReason(String offboardingReason) {
-        this.offboardingReason = offboardingReason;
-    }
-
-    public LocalDate getOffboardingDate() {
-        return offboardingDate;
-    }
-
-    public void setOffboardingDate(LocalDate offboardingDate) {
-        this.offboardingDate = offboardingDate;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
     }
 }
