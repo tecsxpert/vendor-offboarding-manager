@@ -1,5 +1,0 @@
-com\internship\tool\vendor_offboarding_manager\controller\VendorController.class
-com\internship\tool\vendor_offboarding_manager\entity\Vendor.class
-com\internship\tool\vendor_offboarding_manager\config\AuditAspect.class
-com\internship\tool\vendor_offboarding_manager\repository\VendorRepository.class
-com\internship\tool\vendor_offboarding_manager\VendorOffboardingManagerApplication.class
