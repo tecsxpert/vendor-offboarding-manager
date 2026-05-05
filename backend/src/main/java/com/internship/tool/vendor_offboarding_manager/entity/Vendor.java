@@ -1,8 +1,10 @@
 package com.internship.tool.vendor_offboarding_manager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "vendors")
@@ -12,38 +14,46 @@ public class Vendor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "vendor_name", nullable = false)
+    // ✅ Validation added
+    @NotBlank(message = "Vendor name is required")
     private String vendorName;
 
-    @Column(name = "vendor_email", nullable = false, unique = true)
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Vendor email is required")
+    @Column(unique = true)
     private String vendorEmail;
 
-    @Column(name = "vendor_phone")
+    @NotBlank(message = "Vendor phone is required")
     private String vendorPhone;
 
-    @Column(name = "company_name")
+    @NotBlank(message = "Company name is required")
     private String companyName;
 
-    @Column(name = "contract_start_date")
     private LocalDate contractStartDate;
-
-    @Column(name = "contract_end_date")
     private LocalDate contractEndDate;
 
-    @Column(nullable = false)
-    private String status = "ACTIVE";
+    // Status should always be present
+    @NotBlank(message = "Status is required")
+    private String status;
 
-    @Column(name = "offboarding_reason")
+    private LocalDate offboardingDate;
     private String offboardingReason;
 
-    @Column(name = "offboarding_date")
-    private LocalDate offboardingDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private Timestamp createdAt;
+    // ✅ Auto set timestamps
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
-    private Timestamp updatedAt;
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 🔹 Getters and Setters
 
     public Long getId() {
         return id;
@@ -105,14 +115,6 @@ public class Vendor {
         this.status = status;
     }
 
-    public String getOffboardingReason() {
-        return offboardingReason;
-    }
-
-    public void setOffboardingReason(String offboardingReason) {
-        this.offboardingReason = offboardingReason;
-    }
-
     public LocalDate getOffboardingDate() {
         return offboardingDate;
     }
@@ -121,11 +123,19 @@ public class Vendor {
         this.offboardingDate = offboardingDate;
     }
 
-    public Timestamp getCreatedAt() {
+    public String getOffboardingReason() {
+        return offboardingReason;
+    }
+
+    public void setOffboardingReason(String offboardingReason) {
+        this.offboardingReason = offboardingReason;
+    }
+
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 }

@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface VendorRepository extends JpaRepository<Vendor, Long> {
 
+    List<Vendor> findByVendorNameContainingIgnoreCaseOrVendorEmailContainingIgnoreCase(String name, String email);
+
     long countByStatus(String status);
 
-    List<Vendor> findByVendorNameContainingIgnoreCaseOrVendorEmailContainingIgnoreCase(String name, String email);
 }

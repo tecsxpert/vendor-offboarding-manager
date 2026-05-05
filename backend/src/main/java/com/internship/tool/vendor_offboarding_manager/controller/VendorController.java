@@ -1,97 +1,81 @@
 package com.internship.tool.vendor_offboarding_manager.controller;
-import java.util.Map;
+
 import com.internship.tool.vendor_offboarding_manager.entity.Vendor;
-import com.internship.tool.vendor_offboarding_manager.repository.VendorRepository;
+import com.internship.tool.vendor_offboarding_manager.service.VendorService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/vendors")
 @CrossOrigin(origins = "*")
 public class VendorController {
 
-    private final VendorRepository vendorRepository;
+    private final VendorService vendorService;
 
-    public VendorController(VendorRepository vendorRepository) {
-        this.vendorRepository = vendorRepository;
+    public VendorController(VendorService vendorService) {
+        this.vendorService = vendorService;
     }
 
+    // ✅ Get all vendors
     @GetMapping
     public List<Vendor> getAllVendors() {
-        return vendorRepository.findAll();
+        return vendorService.getAllVendors();
     }
 
+    // ✅ Pagination
     @GetMapping("/all")
     public Page<Vendor> getAllVendorsPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return vendorRepository.findAll(pageable);
+        return vendorService.getAllVendorsPaginated(pageable);
     }
 
+    // ✅ Create vendor (with validation)
     @PostMapping
-    public Vendor createVendor(@RequestBody Vendor vendor) {
-        vendor.setStatus("ACTIVE");
-        return vendorRepository.save(vendor);
+    public Vendor createVendor(@Valid @RequestBody Vendor vendor) {
+        return vendorService.createVendor(vendor);
     }
 
+    // ✅ Update vendor (with validation)
     @PutMapping("/{id}")
-    public Vendor updateVendor(@PathVariable Long id, @RequestBody Vendor updatedVendor) {
-        Vendor vendor = vendorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vendor not found"));
-
-        vendor.setVendorName(updatedVendor.getVendorName());
-        vendor.setVendorEmail(updatedVendor.getVendorEmail());
-        vendor.setVendorPhone(updatedVendor.getVendorPhone());
-        vendor.setCompanyName(updatedVendor.getCompanyName());
-        vendor.setContractStartDate(updatedVendor.getContractStartDate());
-        vendor.setContractEndDate(updatedVendor.getContractEndDate());
-        vendor.setStatus(updatedVendor.getStatus());
-
-        return vendorRepository.save(vendor);
+    public Vendor updateVendor(
+            @PathVariable Long id,
+            @Valid @RequestBody Vendor vendor
+    ) {
+        return vendorService.updateVendor(id, vendor);
     }
 
+    // ✅ Soft delete
     @DeleteMapping("/{id}")
-    public Vendor softDeleteVendor(@PathVariable Long id) {
-        Vendor vendor = vendorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vendor not found"));
-
-        vendor.setStatus("INACTIVE");
-        return vendorRepository.save(vendor);
+    public Vendor deleteVendor(@PathVariable Long id) {
+        return vendorService.deleteVendor(id);
     }
 
+    // ✅ Search
     @GetMapping("/search")
     public List<Vendor> searchVendors(@RequestParam String q) {
-        return vendorRepository
-                .findByVendorNameContainingIgnoreCaseOrVendorEmailContainingIgnoreCase(q, q);
+        return vendorService.searchVendors(q);
     }
 
-  @GetMapping("/stats")
-public Map<String, Long> getStats() {
+    // ✅ Stats
+    @GetMapping("/stats")
+    public Map<String, Long> getStats() {
+        return vendorService.getStats();
+    }
 
-    long total = vendorRepository.count();
-    long active = vendorRepository.countByStatus("ACTIVE");
-    long inactive = vendorRepository.countByStatus("INACTIVE");
-    long pending = vendorRepository.countByStatus("PENDING"); // ✅ here
-
-    Map<String, Long> stats = new HashMap<>();
-    stats.put("total", total);
-    stats.put("active", active);
-    stats.put("inactive", inactive);
-    stats.put("pending", pending); // ✅ here
-
-    return stats;
-
-}
-@GetMapping("/{id}")
-public Vendor getVendorById(@PathVariable Long id) {
-    return vendorRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Vendor not found"));
-}
+    // ✅ Get by ID
+    @GetMapping("/{id}")
+    public Vendor getVendorById(@PathVariable Long id) {
+        return vendorService.getVendorById(id);
+    }
 }
